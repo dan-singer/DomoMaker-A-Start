@@ -10,6 +10,7 @@ const signupPage = (req, res) => {
 };
 
 const logout = (req, res) => {
+    req.session.destroy();
   res.redirect('/');
 };
 
@@ -30,6 +31,9 @@ const login = (request, response) => {
       res.status(401).json({ error: 'Wrong username or password' });
       return;
     }
+
+    req.session.account = Account.AccountModel.toAPI(account);
+
     res.json({ redirect: '/maker' });
   });
 };
@@ -59,7 +63,10 @@ const signup = (request, response) => {
     };
     const newAccount = new Account.AccountModel(accountData);
     const savePromise = newAccount.save();
-    savePromise.then(() => res.json({ redirect: '/maker' }));
+    savePromise.then(() => {
+        req.session.account = Account.AccountModel.toAPI(newAccount);
+        res.json({ redirect: '/maker' });
+    });
     savePromise.catch((err) => {
       // console.log(err);
 
