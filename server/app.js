@@ -26,10 +26,10 @@ let redisURL = {
   hostname: 'redis-18766.c10.us-east-1-2.ec2.cloud.redislabs.com',
   port: 18766,
 };
-let redisPASS = 'redis4thewin'; 
+let redisPASS = 'redis4thewin';
 if (process.env.REDISCLOUD_URL) {
   redisURL = url.parse(process.env.REDISCLOUD_URL);
-  redisPASS = redusURL.auth.split(':')[1];
+  redisPASS = redisURL.auth.split(':')[1];
 }
 
 const router = require('./router.js');
@@ -46,7 +46,7 @@ app.use(session({
   store: new RedisStore({
     host: redisURL.hostname,
     port: redisURL.port,
-    pass: redisPASS
+    pass: redisPASS,
   }),
   secret: 'Domo Arigato',
   resave: true,
@@ -65,7 +65,7 @@ app.use((err, req, res, next) => {
   if (err.code !== 'EBADCSRFTOKEN') return next(err);
   // console.log('Missing CSRF token');
   return false;
-})
+});
 
 router(app);
 
