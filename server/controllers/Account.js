@@ -5,9 +5,6 @@ const loginPage = (req, res) => {
   res.render('login', { csrfToken: req.csrfToken() });
 };
 
-const signupPage = (req, res) => {
-  res.render('signup', { csrfToken: req.csrfToken() });
-};
 
 const logout = (req, res) => {
   req.session.destroy();
@@ -71,12 +68,22 @@ const signup = (request, response) => {
       // console.log(err);
 
       if (err.code === 11000) {
-        res.json(400).json({ error: 'Username already in use.' });
+        res.status(400).json({ error: 'Username already in use.' });
       }
     });
   });
 };
 
+const getToken = (request, response) => {
+  const req = request;
+  const res = response;
+
+  const csrfJSON = {
+    csrfToken: req.csrfToken()
+  };
+  res.json(csrfJSON);
+}
+
 module.exports = {
-  loginPage, login, logout, signupPage, signup,
+  loginPage, login, logout, signup, getToken
 };
