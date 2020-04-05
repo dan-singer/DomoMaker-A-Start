@@ -11,6 +11,7 @@ const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const url = require('url');
 const csrf = require('csurf');
+const redis = require('redis');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
@@ -23,14 +24,20 @@ mongoose.connect(dbURL, (err) => {
 });
 
 let redisURL = {
-  hostname: 'redis-18766.c10.us-east-1-2.ec2.cloud.redislabs.com',
-  port: 18766,
+  hostname: 'redis-16240.c114.us-east-1-4.ec2.cloud.redislabs.com',
+  port: 16240,
 };
-let redisPASS = 'redis4thewin';
+let redisPASS = 'K29cT031hqx0iw4wsnsxREwqwwA8TPTp';
 if (process.env.REDISCLOUD_URL) {
   redisURL = url.parse(process.env.REDISCLOUD_URL);
   redisPASS = redisURL.auth.split(':')[1];
 }
+
+let redisClient = redis.createClient({
+  host: redisURL.hostname,
+  port: redisURL.port,
+  password: redisPASS
+});
 
 const router = require('./router.js');
 const app = express();
@@ -44,9 +51,7 @@ app.use(bodyParser.urlencoded({
 app.use(session({
   key: 'sessionid',
   store: new RedisStore({
-    host: redisURL.hostname,
-    port: redisURL.port,
-    pass: redisPASS,
+    client: redisClient
   }),
   secret: 'Domo Arigato',
   resave: true,
